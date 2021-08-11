@@ -23,22 +23,256 @@ knitr::opts_chunk$set(
     results     = TRUE)       # show text output
 ```
 
-## R Markdown
 
-This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
+```{r , include=FALSE}
+# Install packages
+pacman::p_load(pacman, data.table, dplyr, tidyr, knitr, ggplot2, psych, cowplot, 
+               corrplot, stringr, Hmisc, RColorBrewer)
 
-When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this:
+# -----------------------------------------------------------------------------
+# -------------- Set color palettes and sorting/helper variables --------------
+# -----------------------------------------------------------------------------
 
-```{r cars}
-summary(cars)
+# Diverging Palette: Modified from Brewer"Dark2", "Set1" and "Paired" palettes.
+mycolors <- c("#1B9E77", "#D95F02", "#7570B3", "#E7298A", "#00aaff", "#E6AB02", 
+              "#A6761D", "#666666", "#E41A1C", "#377EB8", "#4DAF4A", "#984EA3", 
+              "#FF7F00", "#FFFF33", "#A65628", "#F781BF", "#999999", "#66A61E", 
+              "#B2DF8A", "#33A02C", "#FB9A99", "#E31A1C", "#FDBF6F", "#FF7F00", 
+              "#CAB2D6", "#6A3D9A", "#FFFF99", "#B15928")
+
+# create list of system greys (every other shade)
+mygreycolors <- sprintf('grey%s', seq(0, 100, 2))
+
+# Order string years [add current years as included]
+ordered_years <- c("2014", "2015", "2016",
+                   "2017", "2018", "2019", "2020", "2021")
+
+# Some years are given 53 weeks in the year (usually leap years)
+ordered_weeks <- seq(1:53)
+
+# Order of states and special regions by population, greatest to least.
+# Used for viewing states with similar population sizes and graphic ordering
+state_by_pop <- c("California", "Texas", "Florida", "New York", "Pennsylvania", 
+                  "Illinois", "Ohio", "Georgia", "North Carolina", "Michigan", 
+                  "New Jersey", "Virginia", "New York City", "Washington", 
+                  "Arizona", "Massachusetts", "Tennessee", "Indiana", 
+                  "Missouri", "Maryland", "Wisconsin", "Colorado", "Minnesota", 
+                  "South Carolina", "Alabama", "Louisiana", "Kentucky", 
+                  "Oregon", "Oklahoma", "Connecticut", "Utah", "Puerto Rico", 
+                  "Iowa", "Nevada", "Arkansas", "Mississippi", "Kansas", 
+                  "New Mexico", "Nebraska", "West Virginia", "Idaho", "Hawaii", 
+                  "New Hampshire", "Maine", "Montana", "Rhode Island", 
+                  "Delaware", "South Dakota", "North Dakota", "Alaska", 
+                  "District of Columbia", "Vermont", "Wyoming"
+                  )
+
+# End helper Variables
+
 ```
 
-## Including Plots
+```{r , include=FALSE}
+# -----------------------------------------------------------------------------
+# --------------------------------- Functions ---------------------------------
+# -----------------------------------------------------------------------------
 
-You can also embed plots, for example:
 
-```{r pressure, echo=FALSE}
-plot(pressure)
+
+# End Functions
+
 ```
 
-Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
+### Introduction and Objectives
+
+This report explores the Center for Disease Control's (CDC) Weekly Morbidity and 
+Mortality data from 2014 through the 1st quarter of 2021. 
+The data includes weekly death counts for specific causes in the United States. 
+The data also includes weekly death counts for individual states and specific 
+areas such as New York City, Puerto Rico and Washington, D.C. The data is 
+voluntary and not guaranteed to be reported in a timely or regular basis. 
+Therefore, the most recent data (quarter) will be incomplete and unreliable for 
+analysis and insights. More information on the data set can be found at CDC's 
+website using the following links: 
+
+- [2014-2015 MMWR Data Set](https://data.cdc.gov/NCHS/Weekly-Counts-of-Deaths-by-State-and-Select-Causes/3yf8-kanr){target="_blank"}
+- [2020-2021 MMWR Data Set](https://data.cdc.gov/NCHS/Weekly-Provisional-Counts-of-Deaths-by-State-and-S/muzy-jte6){target="_blank"}
+
+Note: The most current data can be downloaded using the links above. To use the 
+data sets without any code modifications, the user will need to:
+
+1. Place the data two sets in a subdirectory named "data", and
+2. Rename the data sets as "weekly_2014_2019" and "weekly_2020_2021."
+
+
+```{r , include=FALSE}
+
+# import data sets (included in data folder)
+
+mmwr_1419_df = read.csv("data/weekly_2014_2019.csv",
+                   header = TRUE,
+                   stringsAsFactors = FALSE)
+
+mmwr_2021_df = read.csv("data/weekly_2020_2021.csv",
+                   header = TRUE,
+                   stringsAsFactors = FALSE)
+
+```
+
+
+#### Objective
+
+The objective of the project is to analyze national and state level weekly cause
+of death data available from the Centers for Disease Control (CDC) to identify 
+specific diseases with the highest **growth** in deaths so that the information
+may guide long-term and short-term planning. This planning will allow healthcare
+systems to redirect resources, reducing financial, material, facility and labor 
+cost wastage as well as identifying and addressing the cause for the increased 
+deaths before the disease becomes a leading contributor of deaths.
+
+### Initial Data Structure Exploration
+
+```{r }
+str(mmwr_1419_df)
+
+```
+
+```{r }
+str(mmwr_2021_df)
+
+```
+
+```{r }
+head(mmwr_1419_df, 3)
+head(mmwr_2021_df, 3)
+```
+
+#### Observations above
+
+1.  The 2014-2019 data set has 16,902 records with 30 features. The 2020-2021 
+data contains 4,428 records with 35 features. The difference in features is due 
+to the addition of two Covid-19 categories in the 2020-2021 data set.
+
+2. Both data sets have flag columns that identify weekly death counts that are 
+from 1 to 9 deaths that have been redacted due to privacy issues. The records 
+with missing values are currently all due to the privacy flag. These flags 
+columns are not needed for the analysis of growth rates and will be dropped. The
+missing values will not be replaced due to the influence a zero or interpolated 
+value would have on statistical calculations and patterns seen in plots. The 
+missing values do still have value in that they indicate a positive weekly death 
+count below 10. 
+
+2. Both data sets contain coded feature names based on International Classification 
+of Diseases (ICD-10) that will be renamed to shorter names based on affected 
+organ or two word disease name.
+
+3. The dates in both data sets are listed as characters and are not in the 
+global standard format. Data type will be changed and put into ISO 8601 format.
+
+4. The jurisdictions will be renamed to "Location" and changed to a factor.
+
+5. Other features such as year and week may be changed to ordered factors as 
+needed.
+
+Both data sets will be merged after changing column names to more consistent 
+names (# 2 above) and formating (# 3 above). The data will be viewed 
+chronologically after merging to look for inconsistencies in the data. 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
