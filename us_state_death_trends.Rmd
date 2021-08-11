@@ -107,11 +107,11 @@ data sets without any code modifications, the user will need to:
 
 # import data sets (included in data folder)
 
-mmwr_1419_df = read.csv("data/weekly_2014_2019.csv",
+tmp_mmwr_1419_df = read.csv("data/weekly_2014_2019.csv",
                    header = TRUE,
                    stringsAsFactors = FALSE)
 
-mmwr_2021_df = read.csv("data/weekly_2020_2021.csv",
+tmp_mmwr_2021_df = read.csv("data/weekly_2020_2021.csv",
                    header = TRUE,
                    stringsAsFactors = FALSE)
 
@@ -131,19 +131,43 @@ deaths before the disease becomes a leading contributor of deaths.
 ### Initial Data Structure Exploration
 
 ```{r }
-str(mmwr_1419_df)
+str(tmp_mmwr_1419_df)
 
 ```
 
 ```{r }
-str(mmwr_2021_df)
+str(tmp_mmwr_2021_df)
 
 ```
 
 ```{r }
-head(mmwr_1419_df, 3)
-head(mmwr_2021_df, 3)
+head(tmp_mmwr_1419_df, 3)
+head(tmp_mmwr_2021_df, 3)
 ```
+
+```{r }
+# Verify flag column entries are only 'Suppressed (counts1-9)' privacy flags.
+unique(unlist(select(tmp_mmwr_1419_df, contains('flag'))))
+unique(unlist(select(tmp_mmwr_2021_df, contains('flag'))))
+``` 
+
+#### Feature name differences
+
+```{r }
+# Differences in feature names of two data sets
+
+tmp_col_list_1419 <- colnames(tmp_mmwr_1419_df)
+tmp_col_list_2021 <- colnames(tmp_mmwr_2021_df)
+print('---- Columns in 2014-2019 data missing from 2020-2021 data')
+tmp_col_list_1419[!(tmp_col_list_1419 %in% tmp_col_list_2021)]
+```
+
+```{r }
+print('---- Columns in 2020-2021 data missing from 2014-2019 data')
+tmp_col_list_2021[!(tmp_col_list_2021 %in% tmp_col_list_1419)]
+
+```
+
 
 #### Observations above
 
@@ -169,20 +193,119 @@ global standard format. Data type will be changed and put into ISO 8601 format.
 
 4. The jurisdictions will be renamed to "Location" and changed to a factor.
 
-5. Other features such as year and week may be changed to ordered factors as 
+5. Influenza.and.pneumonia has and additional ICD-10 code (J09) in the 2020-2021
+data. ICD-10 code J09 was added for classifying specific strains of Influenza.
+
+6. Data.As.Of exists in the 2020-2021 data set and is used to track updates. The
+update information is a last update and not an indication of record completeness 
+therefore this feature will be dropped. 
+
+7. All..Cause vs All.Cause is a typing difference. This includes non-disease 
+deaths and will not be used in the analysis. Therefore, the column will be 
+removed.
+
+8. Other features such as year and week may be changed to ordered factors as 
 needed.
 
 Both data sets will be merged after changing column names to more consistent 
-names (# 2 above) and formating (# 3 above). The data will be viewed 
+names (# 2 above) and formatting (# 3 above). The data will be viewed 
 chronologically after merging to look for inconsistencies in the data. 
 
 
+### Cleaning and Wrangling
+
+```{r }
+# Dropping flag columns
+
+tmp_mmwr_1419_df <- select(tmp_mmwr_1419_df,
+                           -contains(c('flag', 'All.')))
+
+tmp_mmwr_2021_df <- select(tmp_mmwr_2021_df, 
+                           -contains(c('flag', 'Data.As.Of', 'All.')))
+
+# Rename feature list to more readable and analysis-friendly names
+
+col_list <- c('Location', 'Year', 'Week', 'Week_End_Date', 'Natural', 
+              'Septicemia', 'Cancer', 'Diabetes', 'Alzheimer', 
+              'Influenza_Pneumonia', 'Lower_Respiratory', 'Other_Respiratory', 
+              'Kidney', 'Abnormal_Finding', 'Heart', 'Brain', 'Covid_19_Multi', 
+              'Covid_19')
+
+# Add Covid-19 features filled with 0 and update feature names for 2014-19 data
+tmp_mmwr_1419_df[col_list[17:18]] <- 0
+colnames(tmp_mmwr_1419_df) <- col_list
+
+# Update feature names for 2014-19 data
+colnames(tmp_mmwr_2021_df) <- col_list
+
+# Change data types and formatting for dates
+tmp_mmwr_1419_df$Week_End_Date <- as.Date(tmp_mmwr_1419_df$Week_End_Date,
+                                          format='%m/%d/%Y')
+
+tmp_mmwr_2021_df$Week_End_Date <- as.Date(tmp_mmwr_2021_df$Week_End_Date,
+                                          format='%Y-%m-%d')
+
+```
 
 
+```{r }
+# Merge data sets, clean global environment and confirm changes
 
+if (exists("tmp_mmwr_1419_df") && exists("tmp_mmwr_2021_df")) {
+  
+  # Merge data sets into data.table
+  mmwr_1421_df <- rbindlist(list(tmp_mmwr_1419_df, tmp_mmwr_2021_df))
+  
+  # Change Location to factors
+  mmwr_1421_df$Location <- as.factor(mmwr_1421_df$Location)
 
+  # Remove temporary data frames, environmental variables
+  rm(list = ls(pattern = "^tmp_"))
+}
 
+head(mmwr_1421_df, 3)
 
+```
+
+```{r }
+# Create ordered causes of death vector from greatest to least.
+
+# Initial order of disease columns
+tmp_char_vector <- c('Natural', 'Septicemia', 'Cancer', 'Diabetes', 
+                           'Alzheimer', 'Influenza_Pneumonia', 
+                           'Lower_Respiratory', 'Other_Respiratory', 'Kidney', 
+                           'Abnormal_Finding', 'Heart', 'Brain', 
+                           'Covid_19_Multi', 'Covid_19')
+
+# Get means of National disease deaths counts
+# Order diseases from greatest deaths to least and add to col_list
+deaths_ordered <- tmp_char_vector[rev(
+                                  order(
+                                  colMeans(
+                                   mmwr_1421_df[Location == 'United States',
+                                                Natural:Covid_19],
+                                   na.rm=TRUE)))]
+
+print(deaths_ordered)
+
+col_list <- c('Location', 'Year', 'Week', 'Week_End_Date', deaths_ordered)
+
+print(col_list) 
+
+# rm(list = ls(pattern = "^tmp"))
+
+# reorder table by col_list (most significant deaths to least)
+mmwr_1421_df <- mmwr_1421_df[ , col_list, with = FALSE]
+
+# Verify Changes
+head(mmwr_1421_df)
+
+# Export cleaned data set
+write.csv(mmwr_1421_df,
+          "data\\processed_data\\mmwr_1421_df.csv",
+          row.names = FALSE)
+
+``` 
 
 
 
