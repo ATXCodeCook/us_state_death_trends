@@ -5,6 +5,7 @@ date: "7/21/2021"
 output: 
   html_document:
     df_print: paged
+    keep_md: True
 ---
 
 ```{r, global.options, include = FALSE}
