@@ -4,7 +4,7 @@ author: "Patrick Cook"
 date: "7/21/2021"
 output: 
   html_document:
-    df_print: paged
+    # df_print: paged
     keep_md: True
 ---
 
@@ -127,15 +127,112 @@ deaths before the disease becomes a leading contributor of deaths.
 ##  $ flag_cov19ucod                                                                                   : chr  "" "" "" "" ...
 ```
 
-<div data-pagedtable="false">
-  <script data-pagedtable-source type="application/json">
-{"columns":[{"label":[""],"name":["_rn_"],"type":[""],"align":["left"]},{"label":["Jurisdiction.of.Occurrence"],"name":[1],"type":["chr"],"align":["left"]},{"label":["MMWR.Year"],"name":[2],"type":["int"],"align":["right"]},{"label":["MMWR.Week"],"name":[3],"type":["int"],"align":["right"]},{"label":["Week.Ending.Date"],"name":[4],"type":["chr"],"align":["left"]},{"label":["All..Cause"],"name":[5],"type":["int"],"align":["right"]},{"label":["Natural.Cause"],"name":[6],"type":["int"],"align":["right"]},{"label":["Septicemia..A40.A41."],"name":[7],"type":["int"],"align":["right"]},{"label":["Malignant.neoplasms..C00.C97."],"name":[8],"type":["int"],"align":["right"]},{"label":["Diabetes.mellitus..E10.E14."],"name":[9],"type":["int"],"align":["right"]},{"label":["Alzheimer.disease..G30."],"name":[10],"type":["int"],"align":["right"]},{"label":["Influenza.and.pneumonia..J10.J18."],"name":[11],"type":["int"],"align":["right"]},{"label":["Chronic.lower.respiratory.diseases..J40.J47."],"name":[12],"type":["int"],"align":["right"]},{"label":["Other.diseases.of.respiratory.system..J00.J06.J30.J39.J67.J70.J98."],"name":[13],"type":["int"],"align":["right"]},{"label":["Nephritis..nephrotic.syndrome.and.nephrosis..N00.N07.N17.N19.N25.N27."],"name":[14],"type":["int"],"align":["right"]},{"label":["Symptoms..signs.and.abnormal.clinical.and.laboratory.findings..not.elsewhere.classified..R00.R99."],"name":[15],"type":["int"],"align":["right"]},{"label":["Diseases.of.heart..I00.I09.I11.I13.I20.I51."],"name":[16],"type":["int"],"align":["right"]},{"label":["Cerebrovascular.diseases..I60.I69."],"name":[17],"type":["int"],"align":["right"]},{"label":["flag_allcause"],"name":[18],"type":["lgl"],"align":["right"]},{"label":["flag_natcause"],"name":[19],"type":["lgl"],"align":["right"]},{"label":["flag_sept"],"name":[20],"type":["chr"],"align":["left"]},{"label":["flag_neopl"],"name":[21],"type":["chr"],"align":["left"]},{"label":["flag_diab"],"name":[22],"type":["chr"],"align":["left"]},{"label":["flag_alz"],"name":[23],"type":["chr"],"align":["left"]},{"label":["flag_inflpn"],"name":[24],"type":["chr"],"align":["left"]},{"label":["flag_clrd"],"name":[25],"type":["chr"],"align":["left"]},{"label":["flag_otherresp"],"name":[26],"type":["chr"],"align":["left"]},{"label":["flag_nephr"],"name":[27],"type":["chr"],"align":["left"]},{"label":["flag_otherunk"],"name":[28],"type":["chr"],"align":["left"]},{"label":["flag_hd"],"name":[29],"type":["chr"],"align":["left"]},{"label":["flag_stroke"],"name":[30],"type":["chr"],"align":["left"]}],"data":[{"1":"United States","2":"2014","3":"1","4":"01/04/2014","5":"54065","6":"50189","7":"882","8":"11244","9":"1654","10":"1780","11":"1639","12":"3331","13":"756","14":"965","15":"679","16":"13166","17":"2669","18":"NA","19":"NA","20":"","21":"","22":"","23":"","24":"","25":"","26":"","27":"","28":"","29":"","30":"","_rn_":"1"},{"1":"United States","2":"2014","3":"2","4":"01/11/2014","5":"56353","6":"52450","7":"905","8":"11504","9":"1735","10":"1917","11":"1910","12":"3444","13":"845","14":"1098","15":"665","16":"13663","17":"2738","18":"NA","19":"NA","20":"","21":"","22":"","23":"","24":"","25":"","26":"","27":"","28":"","29":"","30":"","_rn_":"2"},{"1":"United States","2":"2014","3":"3","4":"01/18/2014","5":"54769","6":"51043","7":"919","8":"11496","9":"1660","10":"1914","11":"1920","12":"3333","13":"812","14":"1056","15":"598","16":"12928","17":"2714","18":"NA","19":"NA","20":"","21":"","22":"","23":"","24":"","25":"","26":"","27":"","28":"","29":"","30":"","_rn_":"3"}],"options":{"columns":{"min":{},"max":[10]},"rows":{"min":[10],"max":[10]},"pages":{}}}
-  </script>
-</div><div data-pagedtable="false">
-  <script data-pagedtable-source type="application/json">
-{"columns":[{"label":[""],"name":["_rn_"],"type":[""],"align":["left"]},{"label":["Data.As.Of"],"name":[1],"type":["chr"],"align":["left"]},{"label":["Jurisdiction.of.Occurrence"],"name":[2],"type":["chr"],"align":["left"]},{"label":["MMWR.Year"],"name":[3],"type":["int"],"align":["right"]},{"label":["MMWR.Week"],"name":[4],"type":["int"],"align":["right"]},{"label":["Week.Ending.Date"],"name":[5],"type":["chr"],"align":["left"]},{"label":["All.Cause"],"name":[6],"type":["int"],"align":["right"]},{"label":["Natural.Cause"],"name":[7],"type":["int"],"align":["right"]},{"label":["Septicemia..A40.A41."],"name":[8],"type":["int"],"align":["right"]},{"label":["Malignant.neoplasms..C00.C97."],"name":[9],"type":["int"],"align":["right"]},{"label":["Diabetes.mellitus..E10.E14."],"name":[10],"type":["int"],"align":["right"]},{"label":["Alzheimer.disease..G30."],"name":[11],"type":["int"],"align":["right"]},{"label":["Influenza.and.pneumonia..J09.J18."],"name":[12],"type":["int"],"align":["right"]},{"label":["Chronic.lower.respiratory.diseases..J40.J47."],"name":[13],"type":["int"],"align":["right"]},{"label":["Other.diseases.of.respiratory.system..J00.J06.J30.J39.J67.J70.J98."],"name":[14],"type":["int"],"align":["right"]},{"label":["Nephritis..nephrotic.syndrome.and.nephrosis..N00.N07.N17.N19.N25.N27."],"name":[15],"type":["int"],"align":["right"]},{"label":["Symptoms..signs.and.abnormal.clinical.and.laboratory.findings..not.elsewhere.classified..R00.R99."],"name":[16],"type":["int"],"align":["right"]},{"label":["Diseases.of.heart..I00.I09.I11.I13.I20.I51."],"name":[17],"type":["int"],"align":["right"]},{"label":["Cerebrovascular.diseases..I60.I69."],"name":[18],"type":["int"],"align":["right"]},{"label":["COVID.19..U071..Multiple.Cause.of.Death."],"name":[19],"type":["int"],"align":["right"]},{"label":["COVID.19..U071..Underlying.Cause.of.Death."],"name":[20],"type":["int"],"align":["right"]},{"label":["flag_allcause"],"name":[21],"type":["chr"],"align":["left"]},{"label":["flag_natcause"],"name":[22],"type":["chr"],"align":["left"]},{"label":["flag_sept"],"name":[23],"type":["chr"],"align":["left"]},{"label":["flag_neopl"],"name":[24],"type":["chr"],"align":["left"]},{"label":["flag_diab"],"name":[25],"type":["chr"],"align":["left"]},{"label":["flag_alz"],"name":[26],"type":["chr"],"align":["left"]},{"label":["flag_inflpn"],"name":[27],"type":["chr"],"align":["left"]},{"label":["flag_clrd"],"name":[28],"type":["chr"],"align":["left"]},{"label":["flag_otherresp"],"name":[29],"type":["chr"],"align":["left"]},{"label":["flag_nephr"],"name":[30],"type":["chr"],"align":["left"]},{"label":["flag_otherunk"],"name":[31],"type":["chr"],"align":["left"]},{"label":["flag_hd"],"name":[32],"type":["chr"],"align":["left"]},{"label":["flag_stroke"],"name":[33],"type":["chr"],"align":["left"]},{"label":["flag_cov19mcod"],"name":[34],"type":["chr"],"align":["left"]},{"label":["flag_cov19ucod"],"name":[35],"type":["chr"],"align":["left"]}],"data":[{"1":"08/04/2021","2":"United States","3":"2020","4":"1","5":"2020-01-04","6":"60201","7":"55026","8":"844","9":"11567","10":"1829","11":"2537","12":"1559","13":"3503","14":"1068","15":"1094","16":"635","17":"14212","18":"3110","19":"0","20":"0","21":"","22":"","23":"","24":"","25":"","26":"","27":"","28":"","29":"","30":"","31":"","32":"","33":"","34":"","35":"","_rn_":"1"},{"1":"08/04/2021","2":"United States","3":"2020","4":"2","5":"2020-01-11","6":"60735","7":"55754","8":"863","9":"11961","10":"1942","11":"2566","12":"1528","13":"3709","14":"1035","15":"1092","16":"650","17":"13911","18":"3188","19":"1","20":"1","21":"","22":"","23":"","24":"","25":"","26":"","27":"","28":"","29":"","30":"","31":"","32":"","33":"","34":"","35":"","_rn_":"2"},{"1":"08/04/2021","2":"United States","3":"2020","4":"3","5":"2020-01-18","6":"59362","7":"54517","8":"831","9":"11701","10":"1819","11":"2491","12":"1483","13":"3526","14":"992","15":"1121","16":"615","17":"13591","18":"3257","19":"2","20":"1","21":"","22":"","23":"","24":"","25":"","26":"","27":"","28":"","29":"","30":"","31":"","32":"","33":"","34":"","35":"","_rn_":"3"}],"options":{"columns":{"min":{},"max":[10]},"rows":{"min":[10],"max":[10]},"pages":{}}}
-  </script>
-</div>
+
+```
+##   Jurisdiction.of.Occurrence MMWR.Year MMWR.Week Week.Ending.Date All..Cause
+## 1              United States      2014         1       01/04/2014      54065
+## 2              United States      2014         2       01/11/2014      56353
+## 3              United States      2014         3       01/18/2014      54769
+##   Natural.Cause Septicemia..A40.A41. Malignant.neoplasms..C00.C97.
+## 1         50189                  882                         11244
+## 2         52450                  905                         11504
+## 3         51043                  919                         11496
+##   Diabetes.mellitus..E10.E14. Alzheimer.disease..G30.
+## 1                        1654                    1780
+## 2                        1735                    1917
+## 3                        1660                    1914
+##   Influenza.and.pneumonia..J10.J18.
+## 1                              1639
+## 2                              1910
+## 3                              1920
+##   Chronic.lower.respiratory.diseases..J40.J47.
+## 1                                         3331
+## 2                                         3444
+## 3                                         3333
+##   Other.diseases.of.respiratory.system..J00.J06.J30.J39.J67.J70.J98.
+## 1                                                                756
+## 2                                                                845
+## 3                                                                812
+##   Nephritis..nephrotic.syndrome.and.nephrosis..N00.N07.N17.N19.N25.N27.
+## 1                                                                   965
+## 2                                                                  1098
+## 3                                                                  1056
+##   Symptoms..signs.and.abnormal.clinical.and.laboratory.findings..not.elsewhere.classified..R00.R99.
+## 1                                                                                               679
+## 2                                                                                               665
+## 3                                                                                               598
+##   Diseases.of.heart..I00.I09.I11.I13.I20.I51.
+## 1                                       13166
+## 2                                       13663
+## 3                                       12928
+##   Cerebrovascular.diseases..I60.I69. flag_allcause flag_natcause flag_sept
+## 1                               2669            NA            NA          
+## 2                               2738            NA            NA          
+## 3                               2714            NA            NA          
+##   flag_neopl flag_diab flag_alz flag_inflpn flag_clrd flag_otherresp flag_nephr
+## 1                                                                              
+## 2                                                                              
+## 3                                                                              
+##   flag_otherunk flag_hd flag_stroke
+## 1                                  
+## 2                                  
+## 3
+```
+
+```
+##   Data.As.Of Jurisdiction.of.Occurrence MMWR.Year MMWR.Week Week.Ending.Date
+## 1 08/04/2021              United States      2020         1       2020-01-04
+## 2 08/04/2021              United States      2020         2       2020-01-11
+## 3 08/04/2021              United States      2020         3       2020-01-18
+##   All.Cause Natural.Cause Septicemia..A40.A41. Malignant.neoplasms..C00.C97.
+## 1     60201         55026                  844                         11567
+## 2     60735         55754                  863                         11961
+## 3     59362         54517                  831                         11701
+##   Diabetes.mellitus..E10.E14. Alzheimer.disease..G30.
+## 1                        1829                    2537
+## 2                        1942                    2566
+## 3                        1819                    2491
+##   Influenza.and.pneumonia..J09.J18.
+## 1                              1559
+## 2                              1528
+## 3                              1483
+##   Chronic.lower.respiratory.diseases..J40.J47.
+## 1                                         3503
+## 2                                         3709
+## 3                                         3526
+##   Other.diseases.of.respiratory.system..J00.J06.J30.J39.J67.J70.J98.
+## 1                                                               1068
+## 2                                                               1035
+## 3                                                                992
+##   Nephritis..nephrotic.syndrome.and.nephrosis..N00.N07.N17.N19.N25.N27.
+## 1                                                                  1094
+## 2                                                                  1092
+## 3                                                                  1121
+##   Symptoms..signs.and.abnormal.clinical.and.laboratory.findings..not.elsewhere.classified..R00.R99.
+## 1                                                                                               635
+## 2                                                                                               650
+## 3                                                                                               615
+##   Diseases.of.heart..I00.I09.I11.I13.I20.I51.
+## 1                                       14212
+## 2                                       13911
+## 3                                       13591
+##   Cerebrovascular.diseases..I60.I69. COVID.19..U071..Multiple.Cause.of.Death.
+## 1                               3110                                        0
+## 2                               3188                                        1
+## 3                               3257                                        2
+##   COVID.19..U071..Underlying.Cause.of.Death. flag_allcause flag_natcause
+## 1                                          0                            
+## 2                                          1                            
+## 3                                          1                            
+##   flag_sept flag_neopl flag_diab flag_alz flag_inflpn flag_clrd flag_otherresp
+## 1                                                                             
+## 2                                                                             
+## 3                                                                             
+##   flag_nephr flag_otherunk flag_hd flag_stroke flag_cov19mcod flag_cov19ucod
+## 1                                                                           
+## 2                                                                           
+## 3
+```
 
 
 ```
@@ -222,11 +319,21 @@ chronologically after merging to look for inconsistencies in the data.
 
 
 
-<div data-pagedtable="false">
-  <script data-pagedtable-source type="application/json">
-{"columns":[{"label":["Location"],"name":[1],"type":["fct"],"align":["left"]},{"label":["Year"],"name":[2],"type":["int"],"align":["right"]},{"label":["Week"],"name":[3],"type":["int"],"align":["right"]},{"label":["Week_End_Date"],"name":[4],"type":["date"],"align":["right"]},{"label":["Natural"],"name":[5],"type":["int"],"align":["right"]},{"label":["Septicemia"],"name":[6],"type":["int"],"align":["right"]},{"label":["Cancer"],"name":[7],"type":["int"],"align":["right"]},{"label":["Diabetes"],"name":[8],"type":["int"],"align":["right"]},{"label":["Alzheimer"],"name":[9],"type":["int"],"align":["right"]},{"label":["Influenza_Pneumonia"],"name":[10],"type":["int"],"align":["right"]},{"label":["Lower_Respiratory"],"name":[11],"type":["int"],"align":["right"]},{"label":["Other_Respiratory"],"name":[12],"type":["int"],"align":["right"]},{"label":["Kidney"],"name":[13],"type":["int"],"align":["right"]},{"label":["Abnormal_Finding"],"name":[14],"type":["int"],"align":["right"]},{"label":["Heart"],"name":[15],"type":["int"],"align":["right"]},{"label":["Brain"],"name":[16],"type":["int"],"align":["right"]},{"label":["Covid_19_Multi"],"name":[17],"type":["dbl"],"align":["right"]},{"label":["Covid_19"],"name":[18],"type":["dbl"],"align":["right"]}],"data":[{"1":"United States","2":"2014","3":"1","4":"2014-01-04","5":"50189","6":"882","7":"11244","8":"1654","9":"1780","10":"1639","11":"3331","12":"756","13":"965","14":"679","15":"13166","16":"2669","17":"0","18":"0"},{"1":"United States","2":"2014","3":"2","4":"2014-01-11","5":"52450","6":"905","7":"11504","8":"1735","9":"1917","10":"1910","11":"3444","12":"845","13":"1098","14":"665","15":"13663","16":"2738","17":"0","18":"0"},{"1":"United States","2":"2014","3":"3","4":"2014-01-18","5":"51043","6":"919","7":"11496","8":"1660","9":"1914","10":"1920","11":"3333","12":"812","13":"1056","14":"598","15":"12928","16":"2714","17":"0","18":"0"}],"options":{"columns":{"min":{},"max":[10]},"rows":{"min":[10],"max":[10]},"pages":{}}}
-  </script>
-</div>
+
+```
+##         Location Year Week Week_End_Date Natural Septicemia Cancer Diabetes
+## 1: United States 2014    1    2014-01-04   50189        882  11244     1654
+## 2: United States 2014    2    2014-01-11   52450        905  11504     1735
+## 3: United States 2014    3    2014-01-18   51043        919  11496     1660
+##    Alzheimer Influenza_Pneumonia Lower_Respiratory Other_Respiratory Kidney
+## 1:      1780                1639              3331               756    965
+## 2:      1917                1910              3444               845   1098
+## 3:      1914                1920              3333               812   1056
+##    Abnormal_Finding Heart Brain Covid_19_Multi Covid_19
+## 1:              679 13166  2669              0        0
+## 2:              665 13663  2738              0        0
+## 3:              598 12928  2714              0        0
+```
 
 
 ```
@@ -237,9 +344,27 @@ chronologically after merging to look for inconsistencies in the data.
 ## [13] "Septicemia"          "Abnormal_Finding"
 ```
 
-<div data-pagedtable="false">
-  <script data-pagedtable-source type="application/json">
-{"columns":[{"label":["Location"],"name":[1],"type":["fct"],"align":["left"]},{"label":["Year"],"name":[2],"type":["int"],"align":["right"]},{"label":["Week"],"name":[3],"type":["int"],"align":["right"]},{"label":["Week_End_Date"],"name":[4],"type":["date"],"align":["right"]},{"label":["Natural"],"name":[5],"type":["int"],"align":["right"]},{"label":["Heart"],"name":[6],"type":["int"],"align":["right"]},{"label":["Cancer"],"name":[7],"type":["int"],"align":["right"]},{"label":["Lower_Respiratory"],"name":[8],"type":["int"],"align":["right"]},{"label":["Brain"],"name":[9],"type":["int"],"align":["right"]},{"label":["Alzheimer"],"name":[10],"type":["int"],"align":["right"]},{"label":["Diabetes"],"name":[11],"type":["int"],"align":["right"]},{"label":["Covid_19_Multi"],"name":[12],"type":["dbl"],"align":["right"]},{"label":["Covid_19"],"name":[13],"type":["dbl"],"align":["right"]},{"label":["Influenza_Pneumonia"],"name":[14],"type":["int"],"align":["right"]},{"label":["Kidney"],"name":[15],"type":["int"],"align":["right"]},{"label":["Other_Respiratory"],"name":[16],"type":["int"],"align":["right"]},{"label":["Septicemia"],"name":[17],"type":["int"],"align":["right"]},{"label":["Abnormal_Finding"],"name":[18],"type":["int"],"align":["right"]}],"data":[{"1":"United States","2":"2014","3":"1","4":"2014-01-04","5":"50189","6":"13166","7":"11244","8":"3331","9":"2669","10":"1780","11":"1654","12":"0","13":"0","14":"1639","15":"965","16":"756","17":"882","18":"679"},{"1":"United States","2":"2014","3":"2","4":"2014-01-11","5":"52450","6":"13663","7":"11504","8":"3444","9":"2738","10":"1917","11":"1735","12":"0","13":"0","14":"1910","15":"1098","16":"845","17":"905","18":"665"},{"1":"United States","2":"2014","3":"3","4":"2014-01-18","5":"51043","6":"12928","7":"11496","8":"3333","9":"2714","10":"1914","11":"1660","12":"0","13":"0","14":"1920","15":"1056","16":"812","17":"919","18":"598"},{"1":"United States","2":"2014","3":"4","4":"2014-01-25","5":"50560","6":"12813","7":"11629","8":"3467","9":"2720","10":"1862","11":"1602","12":"0","13":"0","14":"1765","15":"1029","16":"753","17":"845","18":"622"},{"1":"United States","2":"2014","3":"5","4":"2014-02-01","5":"50402","6":"12896","7":"11584","8":"3283","9":"2699","10":"1867","11":"1586","12":"0","13":"0","14":"1642","15":"998","16":"720","17":"890","18":"664"},{"1":"United States","2":"2014","3":"6","4":"2014-02-08","5":"49790","6":"12681","7":"11355","8":"3351","9":"2684","10":"1873","11":"1643","12":"0","13":"0","14":"1528","15":"1038","16":"728","17":"849","18":"641"}],"options":{"columns":{"min":{},"max":[10]},"rows":{"min":[10],"max":[10]},"pages":{}}}
-  </script>
-</div>
+```
+##         Location Year Week Week_End_Date Natural Heart Cancer Lower_Respiratory
+## 1: United States 2014    1    2014-01-04   50189 13166  11244              3331
+## 2: United States 2014    2    2014-01-11   52450 13663  11504              3444
+## 3: United States 2014    3    2014-01-18   51043 12928  11496              3333
+## 4: United States 2014    4    2014-01-25   50560 12813  11629              3467
+## 5: United States 2014    5    2014-02-01   50402 12896  11584              3283
+## 6: United States 2014    6    2014-02-08   49790 12681  11355              3351
+##    Brain Alzheimer Diabetes Covid_19_Multi Covid_19 Influenza_Pneumonia Kidney
+## 1:  2669      1780     1654              0        0                1639    965
+## 2:  2738      1917     1735              0        0                1910   1098
+## 3:  2714      1914     1660              0        0                1920   1056
+## 4:  2720      1862     1602              0        0                1765   1029
+## 5:  2699      1867     1586              0        0                1642    998
+## 6:  2684      1873     1643              0        0                1528   1038
+##    Other_Respiratory Septicemia Abnormal_Finding
+## 1:               756        882              679
+## 2:               845        905              665
+## 3:               812        919              598
+## 4:               753        845              622
+## 5:               720        890              664
+## 6:               728        849              641
+```
 
