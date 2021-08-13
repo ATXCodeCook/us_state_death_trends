@@ -4,7 +4,7 @@ author: "Patrick Cook"
 date: "7/21/2021"
 output: 
   html_document:
-    # df_print: paged
+    df_print: paged
     keep_md: True
 ---
 
@@ -82,6 +82,11 @@ state_by_pop <- c("California", "Texas", "Florida", "New York", "Pennsylvania",
 
 ```
 
+#### **Note**: This file contains initial data cleaning and wrangling steps only. 
+To view the analysis see:
+1. [us_death_trends_analysis](us_death_trends_analysis.html)
+2. [state_death_trends_analysis](state_death_trends_analysis.html)
+
 ### Introduction and Objectives
 
 This report explores the Center for Disease Control's (CDC) Weekly Morbidity and 
@@ -118,6 +123,7 @@ tmp_mmwr_2021_df = read.csv("data/weekly_2020_2021.csv",
 
 ```
 
+<br />  
 
 #### Objective
 
@@ -136,15 +142,33 @@ str(tmp_mmwr_1419_df)
 
 ```
 
+
+
 ```{r }
 str(tmp_mmwr_2021_df)
 
 ```
 
+<br />  
+
+#### 2014-2019 data set head  
+
 ```{r }
 head(tmp_mmwr_1419_df, 3)
+```
+
+<br />  
+
+#### 2020-2021 data set head  
+
+```{r }
 head(tmp_mmwr_2021_df, 3)
 ```
+
+
+<br />  
+
+#### Check flags types 
 
 ```{r }
 # Verify flag column entries are only 'Suppressed (counts1-9)' privacy flags.
@@ -152,25 +176,35 @@ unique(unlist(select(tmp_mmwr_1419_df, contains('flag'))))
 unique(unlist(select(tmp_mmwr_2021_df, contains('flag'))))
 ``` 
 
-#### Feature name differences
+<br />  
+
+#### Feature name differences  
+
+Columns in 2014-2019 data **missing from 2020-2021 data**  
 
 ```{r }
 # Differences in feature names of two data sets
 
 tmp_col_list_1419 <- colnames(tmp_mmwr_1419_df)
 tmp_col_list_2021 <- colnames(tmp_mmwr_2021_df)
+
 print('---- Columns in 2014-2019 data missing from 2020-2021 data')
 tmp_col_list_1419[!(tmp_col_list_1419 %in% tmp_col_list_2021)]
+
 ```
 
+<br />  
+
+Columns in 2020-2021 data **missing from 2014-2019 data**  
+
 ```{r }
-print('---- Columns in 2020-2021 data missing from 2014-2019 data')
 tmp_col_list_2021[!(tmp_col_list_2021 %in% tmp_col_list_1419)]
 
 ```
 
+<br />  
 
-#### Observations above
+#### Data Structure Observations and changes needed  
 
 1.  The 2014-2019 data set has 16,902 records with 30 features. The 2020-2021 
 data contains 4,428 records with 35 features. The difference in features is due 
@@ -213,9 +247,9 @@ names (# 2 above) and formatting (# 3 above). The data will be viewed
 chronologically after merging to look for inconsistencies in the data. 
 
 
-### Cleaning and Wrangling
-
 ```{r }
+# Cleaning and Wrangling processing
+
 # Dropping flag columns
 
 tmp_mmwr_1419_df <- select(tmp_mmwr_1419_df,
@@ -234,9 +268,13 @@ col_list <- c('Location', 'Year', 'Week', 'Week_End_Date', 'Natural',
 
 # Add Covid-19 features filled with 0 and update feature names for 2014-19 data
 tmp_mmwr_1419_df[col_list[17:18]] <- 0
-colnames(tmp_mmwr_1419_df) <- col_list
 
-# Update feature names for 2014-19 data
+# Convert Covid-19 features to integer from number
+tmp_mmwr_1419_df$Covid_19_Multi <- as.integer(tmp_mmwr_1419_df$Covid_19_Multi)
+tmp_mmwr_1419_df$Covid_19 <- as.integer(tmp_mmwr_1419_df$Covid_19)
+
+# Update feature names to common names prior to merging
+colnames(tmp_mmwr_1419_df) <- col_list
 colnames(tmp_mmwr_2021_df) <- col_list
 
 # Change data types and formatting for dates
@@ -264,8 +302,6 @@ if (exists("tmp_mmwr_1419_df") && exists("tmp_mmwr_2021_df")) {
   rm(list = ls(pattern = "^tmp_"))
 }
 
-head(mmwr_1421_df, 3)
-
 ```
 
 ```{r }
@@ -287,17 +323,12 @@ deaths_ordered <- tmp_char_vector[rev(
                                                 Natural:Covid_19],
                                    na.rm=TRUE)))]
 
-print(deaths_ordered)
-
 col_list <- c('Location', 'Year', 'Week', 'Week_End_Date', deaths_ordered)
 
 rm(list = ls(pattern = "^tmp"))
 
 # reorder table by col_list (most significant deaths to least)
 mmwr_1421_df <- mmwr_1421_df[ , col_list, with = FALSE]
-
-# Verify Changes
-head(mmwr_1421_df)
 
 # Export cleaned data set
 write.csv(mmwr_1421_df,
@@ -306,3 +337,21 @@ write.csv(mmwr_1421_df,
 
 ``` 
 
+### Data set after initial Cleaning and Wrangling  
+
+```{r}
+# Verify Changes
+head(mmwr_1421_df)
+
+```
+
+<br />  
+
+#### **Note on Analysis**:
+The analysis of the national data will be performed separately from the state 
+data. To view the analysis see:  
+
+1. [us_death_trends_analysis](us_death_trends_analysis.html)
+2. [state_death_trends_analysis](state_death_trends_analysis.html)  
+
+<br />  

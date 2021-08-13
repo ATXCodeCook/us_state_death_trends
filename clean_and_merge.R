@@ -63,15 +63,8 @@ tmp_mmwr_2021_df = read.csv("data/weekly_2020_2021.csv",
                    header = TRUE,
                    stringsAsFactors = FALSE)
 
-# Verify flag column entries are only 'Suppressed (counts1-9)' privacy flags.
-unique(unlist(select(tmp_mmwr_1419_df, contains('flag'))))
-unique(unlist(select(tmp_mmwr_2021_df, contains('flag'))))
 
-# Differences in feature names of two data sets
-
-tmp_col_list_1419 <- colnames(tmp_mmwr_1419_df)
-tmp_col_list_2021 <- colnames(tmp_mmwr_2021_df)
-
+# Cleaning and Wrangling processing
 
 # Dropping flag columns
 
@@ -91,9 +84,13 @@ col_list <- c('Location', 'Year', 'Week', 'Week_End_Date', 'Natural',
 
 # Add Covid-19 features filled with 0 and update feature names for 2014-19 data
 tmp_mmwr_1419_df[col_list[17:18]] <- 0
-colnames(tmp_mmwr_1419_df) <- col_list
 
-# Update feature names for 2014-19 data
+# Convert Covid-19 features to integer from number
+tmp_mmwr_1419_df$Covid_19_Multi <- as.integer(tmp_mmwr_1419_df$Covid_19_Multi)
+tmp_mmwr_1419_df$Covid_19 <- as.integer(tmp_mmwr_1419_df$Covid_19)
+
+# Update feature names to common names prior to merging
+colnames(tmp_mmwr_1419_df) <- col_list
 colnames(tmp_mmwr_2021_df) <- col_list
 
 # Change data types and formatting for dates
@@ -102,6 +99,7 @@ tmp_mmwr_1419_df$Week_End_Date <- as.Date(tmp_mmwr_1419_df$Week_End_Date,
 
 tmp_mmwr_2021_df$Week_End_Date <- as.Date(tmp_mmwr_2021_df$Week_End_Date,
                                           format='%Y-%m-%d')
+
 
 
 # Merge data sets, clean global environment and confirm changes
@@ -122,10 +120,10 @@ if (exists("tmp_mmwr_1419_df") && exists("tmp_mmwr_2021_df")) {
 
 # Initial order of disease columns
 tmp_char_vector <- c('Natural', 'Septicemia', 'Cancer', 'Diabetes', 
-                           'Alzheimer', 'Influenza_Pneumonia', 
-                           'Lower_Respiratory', 'Other_Respiratory', 'Kidney', 
-                           'Abnormal_Finding', 'Heart', 'Brain', 
-                           'Covid_19_Multi', 'Covid_19')
+                     'Alzheimer', 'Influenza_Pneumonia', 
+                     'Lower_Respiratory', 'Other_Respiratory', 'Kidney', 
+                     'Abnormal_Finding', 'Heart', 'Brain', 
+                     'Covid_19_Multi', 'Covid_19')
 
 # Get means of National disease deaths counts
 # Order diseases from greatest deaths to least and add to col_list
