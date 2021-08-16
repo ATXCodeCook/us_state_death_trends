@@ -4,8 +4,8 @@ author: "Patrick Cook"
 date: "8/13/2021"
 output: 
   html_document:
-    # df_print: paged
-    keep_md: True
+    df_print: paged
+    # keep_md: True
 ---
 
 ```{r, global.options, include = FALSE}
@@ -36,12 +36,12 @@ knitr::opts_chunk$set(
 original data sets' structure and cleaning steps may be found in the file 
 [us_state_death_trends_wrangling](us_state_death_trends_wrangling.Rmd).
 
-### Introduction and Objectives
+## Introduction and Objectives
 
 This report explores the Center for Disease Control's (CDC) Weekly Morbidity and 
 Mortality data from 2014 through the **------>1st quarter of 2021<--------**. 
-This data analysis is focused on National level weekly death counts for specific 
-causes at the United States. A 2nd report will analyze specific state and local 
+**This data analysis is focused on National level weekly death counts for specific 
+causes at the United States**. A 2nd report will analyze specific state and local 
 regions. The data is voluntary and not guaranteed to be reported in a timely or 
 regular basis. Therefore, the most recent data (quarter) will be may be 
 incomplete and unreliable for analysis and insights. 
@@ -58,12 +58,162 @@ data sets without any code modifications, the user will need to:
 1. Place the data two sets in a subdirectory named "data", and
 2. Rename the data sets as "weekly_2014_2019" and "weekly_2020_2021."
 
-### Cleaned data set structure  
+## Data Structure
+
+### Observations and features  
+
+#### First three observations (chronologically) of the data set.  
 
 ```{r}
 
-str(mmwr_1421_df)
+us_deaths_df <- mmwr_1421_df[Location == "United States", ]
+
+# Dropping unused levels (only United States occurs). 
+us_deaths_df$Location <- droplevels(us_deaths_df$Location)
+
+
+head(us_deaths_df, 3)
 
 ```
+
+#### Last three observations (chronologically) of the data set.  
+
+```{r }
+
+tail(us_deaths_df, 3)
+
+```
+
+```{r }
+
+str(us_deaths_df)
+
+```
+
+
+
+After preprocessing and cleaning, the United States (U.S.) subset of data used 
+in this analysis accounts for 395 observations and 18 features which includes 
+categorical location data, chronological date and week of year information, and 
+integer weekly disease death data. The earliest week is the 1st week of January 
+2014. The most current as of this analysis is the week ending January 24, 2021. 
+Next, is the  data set's summary statistics in the U.S. subset.
+
+
+#### Summary statistics
+
+```{r}
+
+as.data.frame(describeBy(us_deaths_df))
+
+
+```
+
+#### Summary statistics for Covid features (2020-2021)
+
+```{r}
+
+as.data.frame(describeBy(us_deaths_df[ Year > 2019, .(Covid_19_Multi, Covid_19)]))
+
+
+
+```
+
+
+```{r, fig.width=10, fig.height=8}
+us_deaths_df[ , Natural:Abnormal_Finding]%>%
+  hist()
+```
+
+```{r, fig.width=4, fig.height=3}
+hist(us_deaths_df[ , Cancer], breaks = 32, main = '', xlab = "Weekly Cancer Deaths (bins=32)") 
+hist(us_deaths_df[ Year > 2019, Covid_19_Multi], breaks = 14, main = '', xlab = "Weekly Covid-19 Comorbidity Deaths (bins=14)")
+hist(us_deaths_df[ Year > 2019, Covid_19], breaks = 14, main = '', xlab = "Weekly Covid-19 Deaths (bins=14)")
+hist(us_deaths_df[ , Abnormal_Finding], breaks = 51, main = '', xlab = "Weekly Abnormal Finding Deaths (bins=52)")
+
+```
+
+
+
+#### Distributions 2014-2021 (Covid deaths are zero prior to 2020)  
+
+```{r, fig.width=10, fig.height=8}
+
+df <- us_deaths_df[ , -c("Location", "Week", "Week_End_Date")] %>%
+  gather(key = key, value = value, -'Year')
+
+df$Year <- ordered(df$Year)
+
+  ggplot(df, aes(x = value, fill = Year)) +
+  geom_histogram(bins=19) +
+  facet_wrap(~key, scales = "free") +
+  ggtitle("2014-2021 Disease Weekly Death Distributions (bins = 14)") +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1), 
+        legend.position="none")
+
+```
+
+
+
+#### Distributions 2014-2021 (Covid deaths are zero prior to 2020)
+
+
+```{r, fig.width=10, fig.height=8}
+
+df <- us_deaths_df[ , -c("Location", "Week", "Week_End_Date")] %>%
+  gather(key = key, value = value, -'Year')
+
+df$Year <- ordered(df$Year)
+
+  ggplot(df, aes(x = value, fill = Year)) +
+  geom_histogram(bins=19) +
+  facet_wrap(~key, scales = "free") +
+  scale_fill_manual(values = mycolors) +
+  ggtitle("2014-2021 Disease Weekly Death Distributions (bins = 14)") +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))
+
+```
+
+#### Distributions 2020-2021 (Covid deaths are zero prior to 2020)
+
+```{r, fig.width=10, fig.height=8}
+
+df <- us_deaths_df[ Year > 2019 , -c("Location", "Week", "Week_End_Date")] %>%
+  gather(key = key, value = value, -'Year')
+
+df$Year <- ordered(df$Year)
+
+  ggplot(df, aes(x = value, fill = Year)) +
+  geom_histogram(bins=14) +
+  facet_wrap(~key, scales = "free") +
+  scale_fill_manual(values = mycolors[7:8]) +
+  ggtitle("2020-2021 Disease Weekly Death Distributions (bins = 14)") +
+  xlab("Weekly Death Counts (bins=14)") +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))
+
+```
+
+
+
+```{r, fig.width=14, fig.height=14}
+psych::pairs.panels(us_deaths_df[ , Natural:Abnormal_Finding], scale = TRUE)
+
+```
+
+```{r, fig.width=14, fig.height=14}
+psych::pairs.panels(us_deaths_df[ Year > 2019 , Natural:Abnormal_Finding], scale = TRUE)
+
+```
+
+
+
+```{r, fig.width=10, fig.height=10}
+psych::pairs.panels(us_deaths_df[ Year > 2019, c("Natural", "Heart", "Brain", "Alzheimer", "Diabetes", "Covid_19_Multi", "Covid_19")], scale = TRUE)
+
+```
+
+
+
+# End of file
 
 
