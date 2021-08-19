@@ -17,7 +17,7 @@ output:
 original data sets' structure and cleaning steps may be found in the file 
 [us_state_death_trends_wrangling](us_state_death_trends_wrangling.Rmd).
 
-## Introduction and Objectives
+## Introduction and Objectives  
 
 This report explores the Center for Disease Control's (CDC) Weekly Morbidity and 
 Mortality data from 2014 through the **------>1st quarter of 2021<--------**. 
@@ -39,20 +39,75 @@ data sets without any code modifications, the user will need to:
 1. Place the data two sets in a subdirectory named "data", and
 2. Rename the data sets as "weekly_2014_2019" and "weekly_2020_2021."
 
-## Data Structure
-
-### Observations and features  
-
-#### First three observations (chronologically) of the data set.  
 
 
 ```r
+# Create United States subset
 us_deaths_df <- mmwr_1421_df[Location == "United States", ]
 
 # Dropping unused levels (only United States occurs). 
 us_deaths_df$Location <- droplevels(us_deaths_df$Location)
+```
 
 
+## Data Structure  
+
+### Observations and features  
+
+#### Verify United States data set is smooth at merge (2019 to 2020).
+#### **Note**: State level data will be verified in individual State analysis.   
+
+
+```r
+# melt(us_deaths_df[ Week_End_Date > as.Date("2019-09-01") & 
+#                    Week_End_Date < as.Date("2020-03-31"),
+#                    Week_End_Date:Abnormal_Finding],
+#      id.vars = "Week_End_Date")
+
+
+
+
+melt(us_deaths_df[ Week_End_Date > as.Date("2019-09-01") & 
+                   Week_End_Date < as.Date("2020-03-31"),
+                   Week_End_Date:Abnormal_Finding],
+     id.vars = "Week_End_Date") %>%
+  
+  ggplot(aes(x=Week_End_Date, y = value, group=variable)) +
+    geom_point() +
+    geom_vline(xintercept=as.Date("2020-01-01"), linetype="dotted") +
+    facet_wrap(~ variable, scales = 'free_y') + 
+    theme_bw()
+```
+
+<img src="images/unnamed-chunk-3-1.png" width="90%" height="90%" style="display: block; margin: auto;" />
+
+There are vertical gaps (jumps) seen at the intersection of the two data sets 
+for: 
+- Influenza and Pneumonia
+- Other Respiratory
+- Abnormal Finding
+
+After the jumps, the data settles into a pattern consistent with the trend of 
+the previous years' data. These gaps are likely related to Covid-19 cases that 
+were undiagnosed due to Covid-19 testing not being available until March of 2020 
+and not being widely available (without restricted use) until May of 2020. In 
+addition, there was not a Covid-19 diagnosis of death code available in the 
+United States on January 1st of 2020 and therefore any deaths would 
+have been diagnosed as another general respiratory category such as these three.
+
+In addition to the gaps, there are notable peaks at the merge point (date) of 
+the two data sets. These peaks are generally smooth before and after, indicating 
+a local anomaly with a true long-term pattern. 
+
+The analysis will comprise mostly of averages and comparisons of year to year 
+descriptive statistics. Therefore, 1-2 week gaps and trends will not effect the 
+analysis. 
+
+#### First three observations (chronologically) of the data set.  
+
+
+
+```r
 head(us_deaths_df, 3)
 ```
 
@@ -135,102 +190,149 @@ Next, is the  data set's summary statistics in the U.S. subset.
 
 
 ```r
-summary(us_deaths_df)
+as.data.frame(describeBy(us_deaths_df[ , -"Week_End_Date"]))
 ```
 
 ```
-##           Location        Year           Week       Week_End_Date       
-##  United States:395   Min.   :2014   Min.   : 1.00   Min.   :2014-01-04  
-##                      1st Qu.:2015   1st Qu.:13.00   1st Qu.:2015-11-24  
-##                      Median :2017   Median :25.00   Median :2017-10-14  
-##                      Mean   :2017   Mean   :25.79   Mean   :2017-10-14  
-##                      3rd Qu.:2019   3rd Qu.:39.00   3rd Qu.:2019-09-03  
-##                      Max.   :2021   Max.   :53.00   Max.   :2021-07-24  
-##     Natural          Heart           Cancer      Lower_Respiratory
-##  Min.   :31341   Min.   : 6715   Min.   : 6927   Min.   :1611     
-##  1st Qu.:46298   1st Qu.:11607   1st Qu.:11276   1st Qu.:2614     
-##  Median :49094   Median :12380   Median :11429   Median :2838     
-##  Mean   :50551   Mean   :12426   Mean   :11420   Mean   :2939     
-##  3rd Qu.:53174   3rd Qu.:13174   3rd Qu.:11606   3rd Qu.:3261     
-##  Max.   :81615   Max.   :16020   Max.   :12408   Max.   :4373     
-##      Brain        Alzheimer       Diabetes    Covid_19_Multi     Covid_19    
-##  Min.   :1737   Min.   :1333   Min.   : 880   Min.   :    0   Min.   :    0  
-##  1st Qu.:2631   1st Qu.:2045   1st Qu.:1484   1st Qu.:    0   1st Qu.:    0  
-##  Median :2792   Median :2228   Median :1603   Median :    0   Median :    0  
-##  Mean   :2803   Mean   :2237   Mean   :1641   Mean   : 1533   Mean   : 1384  
-##  3rd Qu.:2981   3rd Qu.:2454   3rd Qu.:1765   3rd Qu.:    0   3rd Qu.:    0  
-##  Max.   :3535   Max.   :3212   Max.   :2442   Max.   :25889   Max.   :23825  
-##  Influenza_Pneumonia     Kidney       Other_Respiratory   Septicemia    
-##  Min.   : 370.0      Min.   : 544.0   Min.   : 443.0    Min.   : 406.0  
-##  1st Qu.: 765.5      1st Qu.: 904.5   1st Qu.: 724.0    1st Qu.: 709.0  
-##  Median : 865.0      Median : 961.0   Median : 781.0    Median : 748.0  
-##  Mean   :1022.1      Mean   : 970.5   Mean   : 791.4    Mean   : 764.5  
-##  3rd Qu.:1182.0      3rd Qu.:1034.0   3rd Qu.: 854.0    3rd Qu.: 818.5  
-##  Max.   :2930.0      Max.   :1239.0   Max.   :1086.0    Max.   :1066.0  
-##  Abnormal_Finding
-##  Min.   : 494.0  
-##  1st Qu.: 593.0  
-##  Median : 624.0  
-##  Mean   : 716.7  
-##  3rd Qu.: 670.0  
-##  Max.   :3477.0
+##                     vars   n        mean          sd median     trimmed
+## Location*              1 395     1.00000    0.000000      1     1.00000
+## Year                   2 395  2017.29367    2.198254   2017  2017.27445
+## Week                   3 395    25.78987   15.034779     25    25.62145
+## Natural                4 395 50551.41266 6567.181814  49094 49545.39432
+## Heart                  5 395 12426.03797 1095.403199  12380 12379.47634
+## Cancer                 6 395 11419.98481  356.337880  11429 11437.34700
+## Lower_Respiratory      7 395  2939.14684  406.341532   2838  2908.44795
+## Brain                  8 395  2803.38228  248.688087   2792  2797.75394
+## Alzheimer              9 395  2237.13924  319.193222   2228  2235.93060
+## Diabetes              10 395  1640.80759  220.229653   1603  1620.72555
+## Covid_19_Multi        11 395  1533.48354 4352.945981      0   345.78549
+## Covid_19              12 395  1384.38734 3973.191777      0   299.17035
+## Influenza_Pneumonia   13 395  1022.05823  395.156866    865   956.95584
+## Kidney                14 395   970.46076   89.787088    961   967.35016
+## Other_Respiratory     15 395   791.40759   99.947161    781   787.38170
+## Septicemia            16 395   764.53924   80.698224    748   758.89590
+## Abnormal_Finding      17 395   716.65570  402.138885    624   633.18612
+##                           mad   min   max range        skew     kurtosis
+## Location*              0.0000     1     1     0         NaN          NaN
+## Year                   2.9652  2014  2021     7  0.04018294 -1.201190987
+## Week                  19.2738     1    53    52  0.08414306 -1.184716246
+## Natural             4797.6936 31341 81615 50274  2.11060464  6.366299636
+## Heart               1177.1844  6715 16020  9305  0.10663693  1.605421646
+## Cancer               241.6638  6927 12408  5481 -5.65190984 65.499043336
+## Lower_Respiratory    403.2672  1611  4373  2762  0.62120623  0.002147617
+## Brain                260.9376  1737  3535  1798  0.11600165  0.414632216
+## Alzheimer            302.4504  1333  3212  1879  0.07594168  0.101934972
+## Diabetes             195.7032   880  2442  1562  0.92180780  1.444680257
+## Covid_19_Multi         0.0000     0 25889 25889  3.58149278 13.418119684
+## Covid_19               0.0000     0 23825 23825  3.62269119 13.681400771
+## Influenza_Pneumonia  209.0466   370  2930  2560  1.89648600  4.395219812
+## Kidney                96.3690   544  1239   695  0.14227646  0.757053264
+## Other_Respiratory     94.8864   443  1086   643  0.34360252  0.120944183
+## Septicemia            75.6126   406  1066   660  0.54329673  1.282219546
+## Abnormal_Finding      54.8562   494  3477  2983  5.15111038 27.704146038
+##                              se
+## Location*             0.0000000
+## Year                  0.1106062
+## Week                  0.7564818
+## Natural             330.4307774
+## Heart                55.1157164
+## Cancer               17.9293046
+## Lower_Respiratory    20.4452613
+## Brain                12.5128556
+## Alzheimer            16.0603540
+## Diabetes             11.0809564
+## Covid_19_Multi      219.0204818
+## Covid_19            199.9129741
+## Influenza_Pneumonia  19.8824997
+## Kidney                4.5176787
+## Other_Respiratory     5.0288874
+## Septicemia            4.0603683
+## Abnormal_Finding     20.2338032
 ```
+
+#### Summary statistics for Covid features (2020-2021)  
+
 
 ```r
-describeBy(us_deaths_df)
+as.data.frame(describeBy(us_deaths_df[ Year > 2019, 
+                                       .(Covid_19_Multi, Covid_19)]))
 ```
 
 ```
-## Warning in FUN(newX[, i], ...): no non-missing arguments to min; returning Inf
+##                vars  n     mean       sd median  trimmed      mad min   max
+## Covid_19_Multi    1 82 7386.902 6956.655   4917 6348.182 5034.168   0 25889
+## Covid_19          2 82 6668.695 6411.939   4350 5700.848 4585.682   0 23825
+##                range     skew  kurtosis       se
+## Covid_19_Multi 25889 1.178376 0.4514839 768.2340
+## Covid_19       23825 1.188483 0.4342257 708.0802
 ```
 
-```
-## Warning in FUN(newX[, i], ...): no non-missing arguments to max; returning -Inf
+#### Distributions 2014-2021 (Covid deaths are zero prior to 2020)  
+
+
+```r
+us_deaths_df[ , Natural:Abnormal_Finding]%>%
+  hist()
 ```
 
-```
-## Warning in describeBy(us_deaths_df): no grouping variable requested
+<img src="images/unnamed-chunk-9-1.png" width="90%" height="90%" style="display: block; margin: auto;" />
+
+
+#### Distributions 2014-2021 (Covid distibutions are years 2020-2021)  
+
+
+```r
+par(mfrow=c(2,2))
+
+  hist(us_deaths_df[ , Cancer], breaks = 32, 
+       main = "Cancer", 
+       xlab = "Weekly Cancer Deaths (bins=32)") 
+  hist(us_deaths_df[ Year > 2019, Covid_19_Multi], breaks = 14, 
+       main = "Covid-19 Comorbidity", 
+       xlab = "Weekly Covid-19 Comorbidity Deaths (bins=14)")
+  hist(us_deaths_df[ Year > 2019, Covid_19], breaks = 14, 
+       main = "Covid-19 Singular Cause", 
+       xlab = "Weekly Covid-19 Deaths (bins=14)")
+  hist(us_deaths_df[ , Abnormal_Finding], breaks = 51, 
+       main = "Abnormal Finding", 
+       xlab = "Weekly Abnormal Finding Deaths (bins=51)")
 ```
 
+<img src="images/unnamed-chunk-10-1.png" width="90%" height="90%" style="display: block; margin: auto;" />
+
+```r
+par(mfrow=c(1,1))
 ```
-##                     vars   n     mean      sd median  trimmed     mad   min
-## Location*              1 395     1.00    0.00      1     1.00    0.00     1
-## Year                   2 395  2017.29    2.20   2017  2017.27    2.97  2014
-## Week                   3 395    25.79   15.03     25    25.62   19.27     1
-## Week_End_Date          4 395      NaN      NA     NA      NaN      NA   Inf
-## Natural                5 395 50551.41 6567.18  49094 49545.39 4797.69 31341
-## Heart                  6 395 12426.04 1095.40  12380 12379.48 1177.18  6715
-## Cancer                 7 395 11419.98  356.34  11429 11437.35  241.66  6927
-## Lower_Respiratory      8 395  2939.15  406.34   2838  2908.45  403.27  1611
-## Brain                  9 395  2803.38  248.69   2792  2797.75  260.94  1737
-## Alzheimer             10 395  2237.14  319.19   2228  2235.93  302.45  1333
-## Diabetes              11 395  1640.81  220.23   1603  1620.73  195.70   880
-## Covid_19_Multi        12 395  1533.48 4352.95      0   345.79    0.00     0
-## Covid_19              13 395  1384.39 3973.19      0   299.17    0.00     0
-## Influenza_Pneumonia   14 395  1022.06  395.16    865   956.96  209.05   370
-## Kidney                15 395   970.46   89.79    961   967.35   96.37   544
-## Other_Respiratory     16 395   791.41   99.95    781   787.38   94.89   443
-## Septicemia            17 395   764.54   80.70    748   758.90   75.61   406
-## Abnormal_Finding      18 395   716.66  402.14    624   633.19   54.86   494
-##                       max range  skew kurtosis     se
-## Location*               1     0   NaN      NaN   0.00
-## Year                 2021     7  0.04    -1.20   0.11
-## Week                   53    52  0.08    -1.18   0.76
-## Week_End_Date        -Inf  -Inf    NA       NA     NA
-## Natural             81615 50274  2.11     6.37 330.43
-## Heart               16020  9305  0.11     1.61  55.12
-## Cancer              12408  5481 -5.65    65.50  17.93
-## Lower_Respiratory    4373  2762  0.62     0.00  20.45
-## Brain                3535  1798  0.12     0.41  12.51
-## Alzheimer            3212  1879  0.08     0.10  16.06
-## Diabetes             2442  1562  0.92     1.44  11.08
-## Covid_19_Multi      25889 25889  3.58    13.42 219.02
-## Covid_19            23825 23825  3.62    13.68 199.91
-## Influenza_Pneumonia  2930  2560  1.90     4.40  19.88
-## Kidney               1239   695  0.14     0.76   4.52
-## Other_Respiratory    1086   643  0.34     0.12   5.03
-## Septicemia           1066   660  0.54     1.28   4.06
-## Abnormal_Finding     3477  2983  5.15    27.70  20.23
+
+
+
+```r
+psych::pairs.panels(us_deaths_df[ , Natural:Abnormal_Finding], scale = TRUE)
 ```
+
+<img src="images/unnamed-chunk-11-1.png" width="90%" height="90%" style="display: block; margin: auto;" />
+
+
+```r
+psych::pairs.panels(us_deaths_df[ Year > 2019 , Natural:Abnormal_Finding], scale = TRUE)
+```
+
+<img src="images/unnamed-chunk-12-1.png" width="90%" height="90%" style="display: block; margin: auto;" />
+
+
+
+
+```r
+psych::pairs.panels(us_deaths_df[ Year > 2019,
+                                  .(Natural, Heart, Brain, Alzheimer, Diabetes, 
+                                    Covid_19_Multi, Covid_19)], 
+                    scale = TRUE)
+```
+
+<img src="images/unnamed-chunk-13-1.png" width="90%" height="90%" style="display: block; margin: auto;" />
+
+
+
+# End of file
 
 
