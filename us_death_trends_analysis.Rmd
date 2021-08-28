@@ -1,5 +1,5 @@
 ---
-title: "Analysis of U.S. National Disease Death Trends (2014-2021)"
+title: "DRAFT Analysis of U.S. National Disease Death Trends (2014-2021)"
 author: "Patrick Cook"
 date: "8/13/2021"
 output: 
@@ -31,6 +31,8 @@ knitr::opts_chunk$set(
   source("clean_and_merge.R")
 
 ```
+
+# Draft
 
 **Note**: Initial data sets were cleaned and merged prior to this analysis. The 
 original data sets' structure and cleaning steps may be found in the file 
@@ -273,21 +275,7 @@ us_deaths_df[ , Natural:Abnormal_Finding]%>%
   hist()
 ```
 
-#### Chronological data after dropping 2021 3rd quarter data  
 
-```{r, fig.width=14, fig.height=14}
-us_deaths_df <- us_deaths_df[Week_End_Date < as.Date("2021-07-01")]
-
-melt(us_deaths_df[ ,
-                   Week_End_Date:Abnormal_Finding],
-     id.vars = "Week_End_Date") %>%
-  
-  ggplot(aes(x=Week_End_Date, y = value, group=variable)) +
-    geom_point() +
-    facet_wrap(~ variable, scales = 'free_y') + 
-    theme_bw()
-
-```
 
 
 ```{r, fig.width=8, fig.height=6}
@@ -307,6 +295,22 @@ par(mfrow=c(2,2))
        xlab = "Weekly Abnormal Finding Deaths (bins=51)")
 
 par(mfrow=c(1,1))
+
+```
+
+#### Chronological data after dropping 2021 3rd quarter data  
+
+```{r, fig.width=14, fig.height=14}
+us_deaths_df <- us_deaths_df[Week_End_Date < as.Date("2021-07-01")]
+
+melt(us_deaths_df[ ,
+                   Week_End_Date:Abnormal_Finding],
+     id.vars = "Week_End_Date") %>%
+  
+  ggplot(aes(x=Week_End_Date, y = value, group=variable)) +
+    geom_point() +
+    facet_wrap(~ variable, scales = 'free_y') + 
+    theme_bw()
 
 ```
 
