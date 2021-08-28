@@ -77,13 +77,6 @@ us_deaths_df$Location <- droplevels(us_deaths_df$Location)
 #### **Note**: State level data will be verified in individual State analysis.   
 
 ```{r}
-# melt(us_deaths_df[ Week_End_Date > as.Date("2019-09-01") & 
-#                    Week_End_Date < as.Date("2020-03-31"),
-#                    Week_End_Date:Abnormal_Finding],
-#      id.vars = "Week_End_Date")
-
-
-
 
 melt(us_deaths_df[ Week_End_Date > as.Date("2019-09-01") & 
                    Week_End_Date < as.Date("2020-03-31"),
@@ -95,6 +88,7 @@ melt(us_deaths_df[ Week_End_Date > as.Date("2019-09-01") &
     geom_vline(xintercept=as.Date("2020-01-01"), linetype="dotted") +
     facet_wrap(~ variable, scales = 'free_y') + 
     theme_bw()
+
 ```
 
 There are vertical gaps (jumps) seen at the intersection of the two data sets 
@@ -167,8 +161,6 @@ as.data.frame(describeBy(us_deaths_df[ , -"Week_End_Date"]))
 as.data.frame(describeBy(us_deaths_df[ Year > 2019, 
                                        .(Covid_19_Multi, Covid_19)]))
 
-
-
 ```
 
 #### Distributions 2014-2021 (Covid deaths are zero prior to 2020)  
@@ -177,6 +169,12 @@ as.data.frame(describeBy(us_deaths_df[ Year > 2019,
 us_deaths_df[ , Natural:Abnormal_Finding]%>%
   hist()
 ```
+
+Most of the distributions above show data has a normal-like distribution with 
+many having right-skew. The Covid categories are effected by the zeros from 
+years before 2020 when there was not a Covid-19 diagnosis. These will be removed 
+by limiting the data to the years 2020 and greater. The cancer and abnormal 
+categories will benefit from a larger bin size. 
 
 
 #### Distributions 2014-2021 (Covid distibutions are years 2020-2021)  
@@ -201,6 +199,98 @@ par(mfrow=c(1,1))
 
 ```
 
+The cancer and abnormal findings categories show normal-like data distributions 
+with cancer having possible outliers to the left and abnormal findings having 
+significant outliers to the right. Outliers are expected with abnormal findings 
+due to the diagnosis being itself an outlier from all other diagnoses. Cancer 
+would be expected to be consistent with no weeks being significantly different 
+than others. Therefore, cancer will require further analysis.
+
+#### Exploring outliers in cancer data  
+
+
+```{r, fig.width=4, fig.height=4}
+
+plot(us_deaths_df$Week_End_Date, us_deaths_df$Cancer)
+
+```
+
+The outliers occur during the last 3 weeks of the data and possibly extend 
+further. This is likely due to reporting delays and will affect all categories.  
+
+
+#### Examing possible reporting delays in last quarter of data  
+
+```{r, fig.width=14, fig.height=14}
+
+melt(us_deaths_df[ ,
+                   Week_End_Date:Abnormal_Finding],
+     id.vars = "Week_End_Date") %>%
+  
+  ggplot(aes(x=Week_End_Date, y = value, group=variable)) +
+    geom_point() +
+    geom_vline(xintercept=as.Date("2021-07-01"), linetype="solid", color = "blue") +
+    facet_wrap(~ variable, scales = 'free_y') + 
+    theme_bw()
+
+```
+
+All categories except abnormal findings and Covid-19 related categories show the 
+same pattern of outliers likely due to delayed reporting. Some categories, such 
+as Alzheimers, show possible delayed reporting since the end of the 2nd quarter 
+(blue line at 2021-07-01). To prevent possible errors, the analysis will be 
+limited to data through the 2nd quarter of 2021 (2021-06-30). 
+
+
+#### Data after dropping 2021 3rd quarter data  
+
+```{r, fig.width=14, fig.height=14}
+us_deaths_df <- us_deaths_df[Week_End_Date < as.Date("2021-07-01")]
+
+melt(us_deaths_df[ ,
+                   Week_End_Date:Abnormal_Finding],
+     id.vars = "Week_End_Date") %>%
+  
+  ggplot(aes(x=Week_End_Date, y = value, group=variable)) +
+    geom_point() +
+    facet_wrap(~ variable, scales = 'free_y') + 
+    theme_bw()
+
+```
+
+#### Distributions after dropping 2021 3rd quarter data  
+
+
+```{r, fig.width=10, fig.height=8}
+us_deaths_df[ , Natural:Abnormal_Finding]%>%
+  hist()
+```
+
+```{r, fig.width=8, fig.height=6}
+par(mfrow=c(2,2))
+
+  hist(us_deaths_df[ , Cancer], breaks = 32, 
+       main = "Cancer", 
+       xlab = "Weekly Cancer Deaths (bins=32)") 
+  hist(us_deaths_df[ Year > 2019, Covid_19_Multi], breaks = 14, 
+       main = "Covid-19 Comorbidity", 
+       xlab = "Weekly Covid-19 Comorbidity Deaths (bins=14)")
+  hist(us_deaths_df[ Year > 2019, Covid_19], breaks = 14, 
+       main = "Covid-19 Singular Cause", 
+       xlab = "Weekly Covid-19 Deaths (bins=14)")
+  hist(us_deaths_df[ , Abnormal_Finding], breaks = 51, 
+       main = "Abnormal Finding", 
+       xlab = "Weekly Abnormal Finding Deaths (bins=51)")
+
+par(mfrow=c(1,1))
+
+```
+
+
+
+
+
+
 
 ```{r, fig.width=14, fig.height=14}
 psych::pairs.panels(us_deaths_df[ , Natural:Abnormal_Finding], scale = TRUE)
@@ -224,6 +314,9 @@ psych::pairs.panels(us_deaths_df[ Year > 2019,
 
 
 
-# End of file
+
+
+# End of file  
+
 
 
