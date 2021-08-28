@@ -138,7 +138,7 @@ str(us_deaths_df)
 
 
 After preprocessing and cleaning, the United States (U.S.) subset of data used 
-in this analysis accounts for 395 observations and 18 features which includes 
+in this analysis accounts for 398 observations and 18 features which includes 
 categorical location data, chronological date and week of year information, and 
 integer weekly disease death data. The earliest week is the 1st week of January 
 2014. The most current as of this analysis is the week ending January 24, 2021. 
@@ -149,12 +149,32 @@ Next, is the  data set's summary statistics in the U.S. subset.
 
 ```{r, message=FALSE, warning=FALSE }
 
-as.data.frame(describeBy(us_deaths_df[ , -"Week_End_Date"]))
+describe(us_deaths_df[, Location:Week_End_Date])
 
 
 ```
 
-#### Summary statistics for Covid features (2020-2021)  
+There are 398 observations beginning with the week ending date of 
+01-04-2021 to 08-14-2021. The years 2014 and 2020 have a week number 53 due to 
+leap year's extra day and the last week of the year being splitting the 
+following year, This 53rd week will not significantly affect the results of the 
+analysis due to the analysis using year long and quarterly averaging. Year 2021 
+only has 32 weeks. Any analysis after week 32 will show 2020 to previous year 
+comparisons. After further review of the data, analysis will be limited to the 
+end of the 2nd quarter of 2021 (see "Examining possible reporting delays in last 
+quarter of data below"). 
+
+#### Cause of weekly deaths summary statistics
+#### **Note** the Covid-19 data contains fill values of zero for years 2014 through 2019 (inclusive). 
+
+```{r, message=FALSE, warning=FALSE }
+
+as.data.frame(describeBy(us_deaths_df[ , Natural:Abnormal_Finding]))
+
+
+```
+
+#### Summary statistics for Covid features without fill values (2020-2021)  
 
 ```{r, message=FALSE, warning=FALSE }
 
@@ -162,6 +182,9 @@ as.data.frame(describeBy(us_deaths_df[ Year > 2019,
                                        .(Covid_19_Multi, Covid_19)]))
 
 ```
+
+
+
 
 #### Distributions 2014-2021 (Covid deaths are zero prior to 2020)  
 
@@ -219,7 +242,7 @@ The outliers occur during the last 3 weeks of the data and possibly extend
 further. This is likely due to reporting delays and will affect all categories.  
 
 
-#### Examing possible reporting delays in last quarter of data  
+#### Examining possible reporting delays in last quarter of data  
 
 ```{r, fig.width=14, fig.height=14}
 
@@ -242,7 +265,15 @@ as Alzheimers, show possible delayed reporting since the end of the 2nd quarter
 limited to data through the 2nd quarter of 2021 (2021-06-30). 
 
 
-#### Data after dropping 2021 3rd quarter data  
+#### Distributions after dropping 2021 3rd quarter data  
+
+
+```{r, fig.width=10, fig.height=8}
+us_deaths_df[ , Natural:Abnormal_Finding]%>%
+  hist()
+```
+
+#### Chronological data after dropping 2021 3rd quarter data  
 
 ```{r, fig.width=14, fig.height=14}
 us_deaths_df <- us_deaths_df[Week_End_Date < as.Date("2021-07-01")]
@@ -258,13 +289,6 @@ melt(us_deaths_df[ ,
 
 ```
 
-#### Distributions after dropping 2021 3rd quarter data  
-
-
-```{r, fig.width=10, fig.height=8}
-us_deaths_df[ , Natural:Abnormal_Finding]%>%
-  hist()
-```
 
 ```{r, fig.width=8, fig.height=6}
 par(mfrow=c(2,2))
@@ -285,6 +309,8 @@ par(mfrow=c(2,2))
 par(mfrow=c(1,1))
 
 ```
+
+### Seasonal Patterns Seen in Non-seasonal Causes
 
 
 
