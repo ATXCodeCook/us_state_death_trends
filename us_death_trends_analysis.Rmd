@@ -207,18 +207,22 @@ categories will benefit from a larger bin size.
 ```{r, fig.width=8, fig.height=6}
 par(mfrow=c(2,2))
 
-  hist(us_deaths_df[ , Cancer], breaks = 32, 
+  hist(us_deaths_df[ , Cancer], breaks = 22,
+       xlim = c(5000, 14000),
        main = "Cancer", 
-       xlab = "Weekly Cancer Deaths (bins=32)") 
-  hist(us_deaths_df[ Year > 2019, Covid_19_Multi], breaks = 14, 
+       xlab = "Weekly Cancer Deaths") 
+  hist(us_deaths_df[ Year > 2019, Covid_19_Multi], breaks = 13,
+              xlim = c(0, 30000),
        main = "Covid-19 Comorbidity", 
-       xlab = "Weekly Covid-19 Comorbidity Deaths (bins=14)")
-  hist(us_deaths_df[ Year > 2019, Covid_19], breaks = 14, 
+       xlab = "Weekly Covid-19 Comorbidity Deaths")
+  hist(us_deaths_df[ Year > 2019, Covid_19], breaks = 12,
+       xlim = c(0, 25000),
        main = "Covid-19 Singular Cause", 
-       xlab = "Weekly Covid-19 Deaths (bins=14)")
-  hist(us_deaths_df[ , Abnormal_Finding], breaks = 51, 
+       xlab = "Weekly Covid-19 Deaths")
+  hist(us_deaths_df[ , Abnormal_Finding], breaks = 50,
+       xlim = c(100, 3000),
        main = "Abnormal Finding", 
-       xlab = "Weekly Abnormal Finding Deaths (bins=51)")
+       xlab = "Weekly Abnormal Finding Deaths")
 
 par(mfrow=c(1,1))
 
@@ -271,6 +275,9 @@ limited to data through the 2nd quarter of 2021 (2021-06-30).
 
 
 ```{r, fig.width=10, fig.height=8}
+# Limit data set through 2nd quarter 2021 due to delayed reporting.
+us_deaths_df <- us_deaths_df[Week_End_Date < as.Date("2021-07-01")]
+
 us_deaths_df[ , Natural:Abnormal_Finding]%>%
   hist()
 ```
@@ -281,18 +288,22 @@ us_deaths_df[ , Natural:Abnormal_Finding]%>%
 ```{r, fig.width=8, fig.height=6}
 par(mfrow=c(2,2))
 
-  hist(us_deaths_df[ , Cancer], breaks = 32, 
+  hist(us_deaths_df[ , Cancer], breaks = 22,
+       xlim = c(10000, 13000),
        main = "Cancer", 
-       xlab = "Weekly Cancer Deaths (bins=32)") 
-  hist(us_deaths_df[ Year > 2019, Covid_19_Multi], breaks = 14, 
+       xlab = "Weekly Cancer Deaths") 
+  hist(us_deaths_df[ Year > 2019, Covid_19_Multi], breaks = 13,
+              xlim = c(0, 30000),
        main = "Covid-19 Comorbidity", 
-       xlab = "Weekly Covid-19 Comorbidity Deaths (bins=14)")
-  hist(us_deaths_df[ Year > 2019, Covid_19], breaks = 14, 
+       xlab = "Weekly Covid-19 Comorbidity Deaths")
+  hist(us_deaths_df[ Year > 2019, Covid_19], breaks = 12,
+       xlim = c(0, 25000),
        main = "Covid-19 Singular Cause", 
-       xlab = "Weekly Covid-19 Deaths (bins=14)")
-  hist(us_deaths_df[ , Abnormal_Finding], breaks = 51, 
+       xlab = "Weekly Covid-19 Deaths")
+  hist(us_deaths_df[ , Abnormal_Finding], breaks = 50,
+       xlim = c(100, 3000),
        main = "Abnormal Finding", 
-       xlab = "Weekly Abnormal Finding Deaths (bins=51)")
+       xlab = "Weekly Abnormal Finding Deaths")
 
 par(mfrow=c(1,1))
 
@@ -301,7 +312,6 @@ par(mfrow=c(1,1))
 #### Chronological data after dropping 2021 3rd quarter data  
 
 ```{r, fig.width=14, fig.height=14}
-us_deaths_df <- us_deaths_df[Week_End_Date < as.Date("2021-07-01")]
 
 melt(us_deaths_df[ ,
                    Week_End_Date:Abnormal_Finding],
@@ -316,23 +326,35 @@ melt(us_deaths_df[ ,
 
 ### Seasonal Patterns Seen in Non-seasonal Causes
 
+Seasonality trends occur in all cause of death categories. This is expected in 
+respiratory causes of death. Non-respiratory diseases, such as cancer, 
+Alzheimers and diabetes, unexpectedly show seasonality patterns with higher 
+weekly death counts in fall and winter. The next figure examines the 
+chronological correlations of the causes of deaths for the 2020 and 2021 data.
+Earlier years show similar correlations. 
 
 
-
-
-
+#### Seasonal chronological correlations between causes of weekly deaths
 
 ```{r, fig.width=14, fig.height=14}
-psych::pairs.panels(us_deaths_df[ , Natural:Abnormal_Finding], scale = TRUE)
+# psych::pairs.panels(us_deaths_df[ , Natural:Abnormal_Finding], scale = TRUE)
 
 ```
 
-```{r, fig.width=14, fig.height=14}
+```{r, fig.width=14, fig.height=12}
 psych::pairs.panels(us_deaths_df[ Year > 2019 , Natural:Abnormal_Finding], scale = TRUE)
 
 ```
 
-
+ Strong correlations possibly exist between natural deaths and heart, cerebral 
+ (brain), Alzheimers, diabetes and Covid-19 causes of weekly deaths. The heart 
+ weekly deaths category show a moderate to strong correlation with all 
+ categories except abnormal findings. Cerebral (brain) weekly deaths have a 
+ similar relationship excluding lower respiratory and abnormal findings. As 
+ expected, the respiratory causes of death categories show correlations.
+ 
+ #### Causes of death categories with strongest possible correlations  
+ 
 
 ```{r, fig.width=10, fig.height=10}
 psych::pairs.panels(us_deaths_df[ Year > 2019,
@@ -342,7 +364,17 @@ psych::pairs.panels(us_deaths_df[ Year > 2019,
 
 ```
 
+The seasonal patterns could be the result of patients having heart disease and 
+becoming infected with a seasonal virus causing additional stress on the immune 
+system. In addition, natural death is an age based cause of death category. If 
+an elderly patient dies of unknown or comorbid causes, the cause of death will 
+be coded as natural cause of death. 
 
+Though not in the scope of this analysis, these seasonal pattern is interesting 
+in that it points to a possible virus as a cause of death and would benefit from 
+further study. Additional data, such as age and any secondary cause of death 
+data would be beneficial and is available at the National Center for Health 
+Statistics. 
 
 
 
