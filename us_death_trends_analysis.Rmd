@@ -61,12 +61,15 @@ data sets without any code modifications, the user will need to:
 2. Rename the data sets as "weekly_2014_2019" and "weekly_2020_2021."
 
 
-```{r}
+```{r, echo=FALSE, results='hide'}
 # Create United States subset
 us_deaths_df <- mmwr_1421_df[Location == "United States", ]
 
 # Dropping unused levels (only United States occurs). 
 us_deaths_df$Location <- droplevels(us_deaths_df$Location)
+
+any(is.na(us_deaths_df))
+any(is.infinite(us_deaths_df[ , names(us_deaths_df)]))
 
 ```
 
@@ -376,7 +379,45 @@ further study. Additional data, such as age and any secondary cause of death
 data would be beneficial and is available at the National Center for Health 
 Statistics. 
 
+#### Long-term trends (2014-2021)
 
+```{r}
+names(us_deaths_df)
+```
+
+
+```{r, fig.width=14, fig.height=12}
+
+melt(us_deaths_df[ ,
+                   -c("Location", "Year", "Week", "Covid_19", "Covid_19_Multi")],
+     id.vars = "Week_End_Date") %>%
+  
+  ggplot(aes(x=Week_End_Date, y = value, group=variable)) +
+    geom_point() +
+    geom_smooth(se = FALSE,
+                size = 1.5,
+                col=mycolors[24]) +
+    facet_wrap(~ variable, scales = 'free_y') + 
+    theme_bw()
+
+```
+
+```{r, fig.width=7, fig.height=5}
+
+melt(us_deaths_df[ Year > 2019,
+                   c("Week_End_Date", "Covid_19_Multi", "Covid_19")],
+     id.vars = "Week_End_Date") %>%
+  
+  ggplot(aes(x=Week_End_Date, y = value, group=variable)) +
+    geom_point() +
+    geom_smooth(method = "lm",
+                se = FALSE,
+                size = 1.5,
+                col=mycolors[24]) +
+    facet_wrap(~ variable, scales = 'free_y') + 
+    theme_bw()
+
+```
 
 # End of file  
 
